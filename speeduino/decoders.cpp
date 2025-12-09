@@ -6241,11 +6241,21 @@ void triggerSetEndTeeth_FordTFI(void)
       break;
   }
 }
-/** Yamaha FZR250 3LN1 trigger setup with 1 wheels, 4 teeth, 1 long and 3 short - first edge 90deg apart on crank.
+/** Yamaha FZR250 3LN1 trigger setup with 1 wheel, 4 teeth, 1 long - first to pass the VR 80 degrees ATDC #1 firing, 40 degrees in length
+* 3 short - 6 degrees in length - all tooth leading edges are @10 degrees BTDC (the static timed idle advance - spaced 90deg apart on flywheel.
 * @defgroup FZR250 3LN1
 * @{
 */
 void triggerPri_FZR250_3LN1(void)
+
+{
+  if( configPage2.nCylinders == 4)
+  {
+    triggerToothAngle = 90; //The number of degrees that passes from tooth to tooth (primary).
+    triggerActualTeeth = 4; //The number of teeth physically existing on the wheel.
+    triggerFilterTime = (MICROS_PER_SEC / (MAX_RPM / 60U * 4U)); //Trigger filter time is the shortest possible time (in uS) that there can be between crank teeth (ie at max RPM). Any pulses that occur faster than this time will be discarded as noise
+  }
+
 {
   curTime = micros();
   curGap = curTime - toothLastToothTime;
@@ -6253,7 +6263,6 @@ void triggerPri_FZR250_3LN1(void)
   {
     toothCurrentCount++; //Increment the tooth counter
     if (checkSyncToothCount > 0) { checkSyncToothCount++; }
-    if ( triggerSecFilterTime <= curGap ) { triggerSecFilterTime = curGap + (curGap>>1); } //150% crank tooth
     BIT_SET(decoderState, BIT_DECODER_VALID_TRIGGER); //Flag this pulse as being a valid trigger (ie that it passed filters)
 
     toothLastMinusOneToothTime = toothLastToothTime;
