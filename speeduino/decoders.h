@@ -279,9 +279,11 @@ uint16_t getRPM_FordTFI(void);
 int getCrankAngle_FordTFI(void);
 void triggerSetEndTeeth_FordTFI(void);
 
-void triggerSetup_FZR250_3LN1(void);
-void triggerPri_FZR250_3LN1(void);
-void triggerSetEndTeeth_FZR250_3LN1(void);
+void triggerSetup_FZR250_3LNI(void);
+void triggerPri_FZR250_3LNI(void);
+uint16_t getRPM_FZR250_3LNI(void);
+int getCrankAngle_FZR250_3LNI(void);
+void triggerSetEndTeeth_FZR250_3LNI(void);
 
 /**
  * @brief This function is called when the engine is stopped, or when the engine is started. It resets the decoder state and the tooth tracking variables
