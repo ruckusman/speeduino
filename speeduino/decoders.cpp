@@ -6241,4 +6241,58 @@ void triggerSetEndTeeth_FordTFI(void)
       break;
   }
 }
+/** Yamaha FZR250 3LN1 trigger setup with 1 wheels, 4 teeth, 1 long and 3 short - first edge 90deg apart on crank.
+* @defgroup FZR250 3LN1
+* @{
+*/
+void triggerPri_FZR250_3LN1(void)
+{
+  curTime = micros();
+  curGap = curTime - toothLastToothTime;
+  if ( curGap >= triggerFilterTime )
+  {
+    toothCurrentCount++; //Increment the tooth counter
+    if (checkSyncToothCount > 0) { checkSyncToothCount++; }
+    if ( triggerSecFilterTime <= curGap ) { triggerSecFilterTime = curGap + (curGap>>1); } //150% crank tooth
+    BIT_SET(decoderState, BIT_DECODER_VALID_TRIGGER); //Flag this pulse as being a valid trigger (ie that it passed filters)
+
+    toothLastMinusOneToothTime = toothLastToothTime;
+    toothLastToothTime = curTime;
+
+    if ( currentStatus.hasSync == true )
+    {
+      if ( (toothCurrentCount == 1) || (toothCurrentCount > configPage4.triggerTeeth) )
+      {
+        toothCurrentCount = 1;
+        revolutionOne = !revolutionOne; //Flip sequential revolution tracker
+        toothOneMinusOneTime = toothOneTime;
+        toothOneTime = curTime;
+        currentStatus.startRevolutions++; //Counter
+      }
+
+      setFilter(curGap); //Recalc the new filter value
+    }
+    else
+    {
+      if ( (secondaryToothCount == 1) && (checkSyncToothCount == 4) )
+      {
+        toothCurrentCount = 2;
+        currentStatus.hasSync = true;
+        revolutionOne = 0; //Sequential revolution reset
+      }
+    }
+
+    //NEW IGNITION MODE
+    if( (configPage2.perToothIgn == true) && (!currentStatus.engineIsCranking) ) 
+    {
+      int16_t crankAngle = ( (toothCurrentCount-1) * triggerToothAngle ) + configPage4.triggerAngle;
+      if( (configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && (revolutionOne == true) && (configPage4.TrigSpeed == CRANK_SPEED) )
+      {
+        crankAngle += 360;
+        checkPerToothTiming(crankAngle, (configPage4.triggerTeeth + toothCurrentCount)); 
+      }
+      else{ checkPerToothTiming(crankAngle, toothCurrentCount); }
+    }
+  } //Trigger filter
+}
 /** @} */
