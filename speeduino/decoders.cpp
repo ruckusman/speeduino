@@ -6255,7 +6255,7 @@ void triggerPri_FZR250_3LN1(void)
     triggerActualTeeth = 4; //The number of teeth physically existing on the wheel.
     triggerFilterTime = (MICROS_PER_SEC / (MAX_RPM / 60U * 4U)); //Trigger filter time is the shortest possible time (in uS) that there can be between crank teeth (ie at max RPM). Any pulses that occur faster than this time will be discarded as noise
   }
-}
+
 {
   curTime = micros();
   curGap = curTime - toothLastToothTime;
@@ -6303,5 +6303,6 @@ void triggerPri_FZR250_3LN1(void)
       else{ checkPerToothTiming(crankAngle, toothCurrentCount); }
     }
   } //Trigger filter
+}
 }
 /** @} */
