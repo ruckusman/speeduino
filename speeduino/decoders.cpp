@@ -6306,8 +6306,9 @@ void triggerPri_FZR2503LN1(void)
 
       setFilter(curGap); //Recalc the new filter value
     }
-
-/** FZR250 3LN1 Get RPM.
+  }
+}
+  /** FZR250 3LN1 Get RPM.
  * 
  * */
     
@@ -6352,6 +6353,5 @@ uint16_t getRPM_FZR2503LN1(void)
 {
 }
     
-  } //Trigger filter
-}
+ //Trigger filter
 /** @} */
