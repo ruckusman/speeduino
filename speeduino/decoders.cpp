@@ -6291,6 +6291,22 @@ void triggerPri_FZR2503LN1(void)
       }
     }
 
+uint16_t getRPM_NGC(void)
+{
+  uint16_t tempRPM = 0;
+  if( currentStatus.RPM < currentStatus.crankRPM)
+  {
+    if (BIT_CHECK(decoderState, BIT_DECODER_TOOTH_ANG_CORRECT)) { tempRPM = crankingGetRPM(4, CRANK_SPEED); }
+    else { tempRPM = currentStatus.RPM; } //Can't do per tooth RPM if we're at any of the missing teeth as it messes the calculation
+  }
+  else
+  {
+    tempRPM = stdGetRPM(CRANK_SPEED);
+  }
+  return tempRPM;
+}
+
+  
     //NEW IGNITION MODE
     if( (configPage2.perToothIgn == true) && (!currentStatus.engineIsCranking) ) 
     {
