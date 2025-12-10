@@ -6246,7 +6246,8 @@ void triggerSetEndTeeth_FordTFI(void)
 * @defgroup FZR250 3LN1
 * @{
 */
-void triggerPri_FZR2503LN1(void)
+
+void triggerSetup_FZR2503LN1(void)
 
 {
   if( configPage2.nCylinders == 4)
@@ -6255,7 +6256,8 @@ void triggerPri_FZR2503LN1(void)
     triggerActualTeeth = 4; //The number of teeth physically existing on the wheel.
     triggerFilterTime = (MICROS_PER_SEC / (MAX_RPM / 60U * 4U)); //Trigger filter time is the shortest possible time (in uS) that there can be between crank teeth (ie at max RPM). Any pulses that occur faster than this time will be discarded as noise
   }
-
+void triggerPri_FZR2503LN1(void)
+  
 {
   curTime = micros();
   curGap = curTime - toothLastToothTime;
