@@ -3644,7 +3644,7 @@ void initialiseTriggers(void)
 
 	  case DECODER_FZR250_3LN1:
       // FZR250 3LN1
-      triggerSetup_FZR2503LN1();
+      triggerSetup_FZR250_3LN1();
       triggerHandler = triggerPri_FZR250_3LN1;
       getRPM = getRPM_FZR250_3LN1;
       getCrankAngle = getCrankAngle_FZR250_3LN1;
