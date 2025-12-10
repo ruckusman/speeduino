@@ -6248,8 +6248,7 @@ void triggerSetEndTeeth_FordTFI(void)
 */
 
 void triggerSetup_FZR2503LN1(void)
-{
-  if( configPage2.nCylinders == 4)
+
   {
     triggerToothAngle = 90; //The number of degrees that passes from tooth to tooth (primary).
     triggerActualTeeth = 4; //The number of teeth physically existing on the wheel.
