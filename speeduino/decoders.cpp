@@ -457,7 +457,7 @@ static __attribute__((noinline)) int crankingGetRPM(byte totalTeeth, bool isCamT
     if((toothLastMinusOneToothTime > 0) && (toothLastToothTime > toothLastMinusOneToothTime) )
     {
       noInterrupts();
-      bool newRevtime = SetRevolutionTime(((toothLastToothTime - toothLastMinusOneToothTime) * totalTeeth) >> (isCamTeeth ? 1U : 0U));
+      bool newRevtime = SetRevolutionTime((( - toothLastMinusOneToothTime) * totalTeeth) >> (isCamTeeth ? 1U : 0U));
       interrupts();
       if (newRevtime) {
         return RpmFromRevolutionTimeUs(revolutionTime);
@@ -6241,21 +6241,46 @@ void triggerSetEndTeeth_FordTFI(void)
       break;
   }
 }
-/** Yamaha FZR250 3LN1 trigger setup with 1 wheel, 4 teeth, 1 long - first to pass the VR 80 degrees ATDC #1 firing, 40 degrees in length
-* 3 short - 6 degrees in length - all tooth leading edges are @10 degrees BTDC (the static timed idle advance - spaced 90deg apart on flywheel.
+/** Yamaha FZR250 3LN1 trigger setup with 1 wheel; 4 teeth; 1 long tooth - first to pass the VR 80 degrees ATDC #1 firing, 40 degrees in length
+* 3 short teeth - 6 degrees in length - all tooth leading edges are 90 degrees apart BTDC (the static timed idle advance - spaced 90deg apart on flywheel.
 * @defgroup FZR250 3LN1
 * @{
 */
 
-void triggerSetup_FZR2503LN1(void)
+/** FZR250 3LN1 Setup.
+ * 
+ * */
 
+void triggerSetup_FZR2503LN1(void)
   {
     triggerToothAngle = 90; //The number of degrees that passes from tooth to tooth (primary).
     triggerActualTeeth = 4; //The number of teeth physically existing on the wheel.
     triggerFilterTime = (MICROS_PER_SEC / (MAX_RPM / 60U * 4U)); //Trigger filter time is the shortest possible time (in uS) that there can be between crank teeth (ie at max RPM). Any pulses that occur faster than this time will be discarded as noise
-  }
+    BIT_CLEAR(decoderState, BIT_DECODER_2ND_DERIV);
+    BIT_SET(decoderState, BIT_DECODER_IS_SEQUENTIAL);
+    BIT_SET(decoderState, BIT_DECODER_HAS_SECONDARY);
+    toothCurrentCount = 1;
+    BIT_CLEAR(decoderState, BIT_DECODER_TOOTH_ANG_CORRECT);
+    toothSystemCount = 0;
+    MAX_STALL_TIME = ((MICROS_PER_DEG_1_RPM/50U) * 4U); //Minimum 50rpm. (3333uS is the time per degree at 50rpm)
+
+    //Note that these angles are for every rising and falling edge
+
+    toothAngles[0] = 350; //tooth #1, 10 degrees before TDC #1 firing #4 wasted spark
+    toothAngles[1] = 356;
+    toothAngles[2] = 80;  //tooth #2, 40 degree long tooth
+    toothAngles[3] = 120;
+    toothAngles[4] = 170; //tooth #3 10 degrees before TDC #3 firing #1 wasted spark
+    toothAngles[5] = 176;
+    toothAngles[6] = 260; //tooth #4, 
+    toothAngles[7] = 266;
+ }
+
+/** FZR250 3LN1 Primary.
+ * 
+ * */
+
 void triggerPri_FZR2503LN1(void)
-  
 {
   curTime = micros();
   curGap = curTime - toothLastToothTime;
@@ -6270,7 +6295,7 @@ void triggerPri_FZR2503LN1(void)
 
     if ( currentStatus.hasSync == true )
     {
-      if ( (toothCurrentCount == 1) || (toothCurrentCount > configPage4.triggerTeeth) )
+      if ( (toothCurrentCount == 4) || (toothCurrentCount > configPage4.triggerTeeth) )
       {
         toothCurrentCount = 1;
         revolutionOne = !revolutionOne; //Flip sequential revolution tracker
@@ -6281,37 +6306,52 @@ void triggerPri_FZR2503LN1(void)
 
       setFilter(curGap); //Recalc the new filter value
     }
-    else
-    {
-      if ( (secondaryToothCount == 1) && (checkSyncToothCount == 4) )
-      {
-        toothCurrentCount = 2;
-        currentStatus.hasSync = true;
-        revolutionOne = 0; //Sequential revolution reset
-      }
-    }
 
-uint16_t getRPM_NGC(void)
-
-  uint16_t tempRPM = 0;
-  if( currentStatus.RPM < currentStatus.crankRPM)
-  {
-    if (BIT_CHECK(decoderState, BIT_DECODER_TOOTH_ANG_CORRECT)) { tempRPM = crankingGetRPM(4, CRANK_SPEED); }
-  }
+/** FZR250 3LN1 Get RPM.
+ * 
+ * */
+    
+uint16_t getRPM_FZR2503LN1(void)
+{
+   return stdGetRPM(CRANK_SPEED);
 }
 
+/** FZR250 3LN1 - Get Crank angle.
+ * 
+ * */
+    
+    int getCrankAngle_FZR2503LN1(void)
+{
+  //Grab some variables that are used in the trigger code and assign them to temp variables.
+  noInterrupts();
+  uint16_t tempToothCurrentCount = toothCurrentCount;
+  unsigned long tempToothLastToothTime = toothLastToothTime;
+  lastCrankAngleCalc = micros(); //micros() is no longer interrupt safe
+  interrupts();
+
+  if (tempToothCurrentCount>0U) {
+    triggerToothAngle = (uint16_t)toothAngles[tempToothCurrentCount] - (uint16_t)toothAngles[tempToothCurrentCount-1U];
+  }
   
-    //NEW IGNITION MODE
-    if( (configPage2.perToothIgn == true) && (!currentStatus.engineIsCranking) ) 
-    {
-      int16_t crankAngle = ( (toothCurrentCount-1) * triggerToothAngle ) + configPage4.triggerAngle;
-      if( (configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && (revolutionOne == true) && (configPage4.TrigSpeed == CRANK_SPEED) )
-      {
-        crankAngle += 360;
-        checkPerToothTiming(crankAngle, (configPage4.triggerTeeth + toothCurrentCount)); 
-      }
-      else{ checkPerToothTiming(crankAngle, toothCurrentCount); }
-    }
+  //Estimate the number of degrees travelled since the last tooth}
+  elapsedTime = (lastCrankAngleCalc - tempToothLastToothTime);
+
+  int crankAngle = toothAngles[tempToothCurrentCount] + configPage4.triggerAngle; //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
+  crankAngle += (int)timeToAngleDegPerMicroSec(elapsedTime);
+  if (crankAngle >= 360) { crankAngle -= 360; }
+  if (crankAngle < 0) { crankAngle += 360; }   
+
+  return crankAngle;
+}
+
+/** FZR250 3LN1 - Set End Teeth.
+ * 
+ * */ 
+
+    void triggerSetEndTeeth_24X(void)
+{
+}
+    
   } //Trigger filter
 }
 /** @} */
