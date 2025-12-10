@@ -3636,13 +3636,13 @@ void initialiseTriggers(void)
       else { attachInterrupt(triggerInterrupt, triggerHandler, FALLING); }
       break;
 
-	  case DECODER_FZR250_3LN1:
+	  case DECODER_FZR2503LN1:
       // FZR250 3LN1
-      triggerSetup_FZR2503LN1();
-      triggerHandler = triggerPri_FZR2503LN1;
-      getRPM = getRPM_FZR2503LN1;
-      getCrankAngle = getCrankAngle_FZR2503LN1;
-      triggerSetEndTeeth = triggerSetEndTeeth_FZR2503LN1;
+      triggerSetup_FZR250_3LN1();
+      triggerHandler = triggerPri_FZR250_3LN1;
+      getRPM = getRPM_FZR250_3LN1;
+      getCrankAngle = getCrankAngle_FZR250_3LN1;
+      triggerSetEndTeeth = triggerSetEndTeeth_FZR250_3LN1;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
       else { primaryTriggerEdge = FALLING; }
