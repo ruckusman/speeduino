@@ -6349,7 +6349,7 @@ uint16_t getRPM_FZR2503LN1(void)
  * 
  * */ 
 
-    void triggerSetEndTeeth_24X(void)
+    void triggerSetEndTeeth_FZR2503LN1(void)
 {
 }
     
