@@ -42,7 +42,7 @@
 #define DECODER_SUZUKI_K6A        26
 #define DECODER_HONDA_J32         27
 #define DECODER_FORD_TFI          28
-#define DECODER_FZR250_3LN1       29
+#define DECODER_FZR2503LN1        29
 
 #define BIT_DECODER_2ND_DERIV           0 //The use of the 2nd derivative calculation is limited to certain decoders. This is set to either true or false in each decoders setup routine
 #define BIT_DECODER_IS_SEQUENTIAL       1 //Whether or not the decoder supports sequential operation
