@@ -6246,7 +6246,7 @@ void triggerSetEndTeeth_FordTFI(void)
 * @defgroup FZR250 3LN1
 * @{
 */
-void triggerPri_FZR250_3LN1(void)
+void triggerPri_FZR2503LN1(void)
 
 {
   if( configPage2.nCylinders == 4)
