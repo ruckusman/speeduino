@@ -3632,12 +3632,6 @@ void initialiseTriggers(void)
       attachInterrupt(triggerInterrupt2, triggerSecondaryHandler, secondaryTriggerEdge);
       break;
 
-
-    default:
-      triggerHandler = triggerPri_missingTooth;
-      getRPM = getRPM_missingTooth;
-      getCrankAngle = getCrankAngle_missingTooth;
-
       if(configPage4.TrigEdge == 0) { attachInterrupt(triggerInterrupt, triggerHandler, RISING); } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
       else { attachInterrupt(triggerInterrupt, triggerHandler, FALLING); }
       break;
@@ -3656,14 +3650,14 @@ void initialiseTriggers(void)
       attachInterrupt(triggerInterrupt, triggerHandler, primaryTriggerEdge);
       break;
 
-      default:
-      triggerHandler = triggerPri_missingTooth;
-      getRPM = getRPM_missingTooth;
-      getCrankAngle = getCrankAngle_missingTooth;
-
       if(configPage4.TrigEdge == 0) { attachInterrupt(triggerInterrupt, triggerHandler, RISING); } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
       else { attachInterrupt(triggerInterrupt, triggerHandler, FALLING); }
       break;
+
+	  default:
+      triggerHandler = triggerPri_missingTooth;
+      getRPM = getRPM_missingTooth;
+      getCrankAngle = getCrankAngle_missingTooth;
   }
 
   boardInitPins();
