@@ -3641,6 +3641,29 @@ void initialiseTriggers(void)
       if(configPage4.TrigEdge == 0) { attachInterrupt(triggerInterrupt, triggerHandler, RISING); } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
       else { attachInterrupt(triggerInterrupt, triggerHandler, FALLING); }
       break;
+
+	  case DECODER_FZR250_3LN1:
+      // FZR250 3LN1
+      triggerSetup_FZR2503LN1();
+      triggerHandler = triggerPri_FZR2503LN1;
+      getRPM = getRPM_FZR2503LN1;
+      getCrankAngle = getCrankAngle_FZR2503LN1;
+      triggerSetEndTeeth = triggerSetEndTeeth_FZR2503LN1;
+
+      if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
+      else { primaryTriggerEdge = FALLING; }
+      
+      attachInterrupt(triggerInterrupt, triggerHandler, primaryTriggerEdge);
+      break;
+
+      default:
+      triggerHandler = triggerPri_missingTooth;
+      getRPM = getRPM_missingTooth;
+      getCrankAngle = getCrankAngle_missingTooth;
+
+      if(configPage4.TrigEdge == 0) { attachInterrupt(triggerInterrupt, triggerHandler, RISING); } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
+      else { attachInterrupt(triggerInterrupt, triggerHandler, FALLING); }
+      break;
   }
 
   boardInitPins();
