@@ -6308,7 +6308,7 @@ void triggerPri_FZR2503LN1(void)
     }
   }
 }
-void triggerSec_BasicDistributor(void) { return; } //Not required
+void triggerSec_FZR2503LN1(void) { return; } //Not required
   /** FZR250 3LN1 Get RPM.
  * 
  * */
