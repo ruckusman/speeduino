@@ -281,6 +281,7 @@ void triggerSetEndTeeth_FordTFI(void);
 
 void triggerSetup_FZR2503LN1(void);
 void triggerPri_FZR2503LN1(void);
+void triggerSec_FZR2503LN1(void);
 uint16_t getRPM_FZR2503LN1(void);
 int getCrankAngle_FZR2503LN1(void);
 void triggerSetEndTeeth_FZR2503LN1(void);
